@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Neon Palette */
+  --neon-green: #39ff14;
+  --neon-blue: #00e5ff;
+  --neon-magenta: #ff00ff;
+  
+  /* Defaults */
+  --bg-color: #050505;
+  --text-primary: #ffffff;
+  --text-secondary: #aaaaaa;
+
+  /* This is the active theme color, default is green */
+  --neon-color: var(--neon-green); 
+}
+
+/* Theme active classes (will be applied to body) */
+.theme-green { --neon-color: var(--neon-green); }
+.theme-blue { --neon-color: var(--neon-blue); }
+.theme-magenta { --neon-color: var(--neon-magenta); }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease;
+}
+
+.app-container {
+  min-height: 100vh;
+  width: 100vw;
+  background-size: cover;
+  background-position: right center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  transition: background-image 0.8s ease-in-out;
+  position: relative;
+}
+
+/* Dark overlay to ensure text readability but allowing background image to be seen */
+.app-container::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  /* Dark darker on the left where the text is, almost transparent on the right */
+  background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.3) 100%);
+  z-index: 1;
+}
+
+.content-wrapper {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  width: 100%;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: rgba(15, 15, 15, 0.4);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* A soft glow at the top edge of the panel to accent the layout */
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-color), transparent);
+  opacity: 0.5;
+  transition: background 0.3s ease;
+}
+
+/* Asymmetrical Layout for Card */
+.form-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start; /* Aligns to left */
+  max-width: 500px; /* Forces offset so it doesn't touch the right edge */
+  width: 90%;
+  margin-top: 2vh; /* Slight offset to keep everything on screen */
+}
+
+@media (max-width: 768px) {
+  .form-area {
+    width: 85%; /* Still leaves gap on right for mobile to show the image */
+    padding: 20px 0;
+  }
+  .glass-panel {
+    padding: 24px;
+  }
+}
+
+/* Progress Component */
+.progress-container {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--neon-color);
+  box-shadow: 0 0 12px var(--neon-color);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Texts and Buttons */
+.question-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.motivation-text {
+  font-size: 1.05rem;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--neon-color);
+  margin-bottom: 2rem;
+  letter-spacing: 0.5px;
+  border-left: 3px solid var(--neon-color);
+  padding-left: 12px;
+  opacity: 0.9;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.option-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 18px 24px;
+  border-radius: 12px;
+  text-align: left;
+  font-size: 1.1rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  position: relative;
+  overflow: hidden;
+}
+
+.option-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--neon-color);
+  transform: translateX(4px);
+}
+
+.option-btn:active {
+  transform: translateX(2px);
+}
+
+.option-btn.selected {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--neon-color);
+  box-shadow: 0 0 15px rgba(var(--neon-color), 0.5); /* glow effect */
+}
+
+/* Fading animation for card content */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Custom Text Inputs */
+input.option-btn, textarea.option-btn {
+  width: 100%;
+  font-family: inherit;
+  color: white;
+  outline: none;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+input.option-btn::placeholder, textarea.option-btn::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+input.option-btn:focus, textarea.option-btn:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--neon-color);
+  box-shadow: 0 0 10px var(--neon-color);
+}
