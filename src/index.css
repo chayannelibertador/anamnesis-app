@@ -102,12 +102,27 @@ body {
 }
 
 @media (max-width: 768px) {
+  .app-container {
+    background-position: center top;
+  }
+  .app-container::before {
+    /* on mobile, dark fade from top to bottom so image is slightly visible behind form */
+    background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.85) 100%);
+  }
+  .content-wrapper {
+    padding: 15px;
+  }
   .form-area {
-    width: 85%; /* Still leaves gap on right for mobile to show the image */
-    padding: 20px 0;
+    width: 100%; /* Take full width minus the wrapper padding */
+    max-width: 100%;
+    margin-top: 0; /* Remove top offset to fix "too much air" */
+    padding: 0;
   }
   .glass-panel {
-    padding: 24px;
+    padding: 20px;
+    background: rgba(15, 15, 15, 0.45); /* Extra transparency to see bg */
+    backdrop-filter: blur(10px) saturate(160%);
+    -webkit-backdrop-filter: blur(10px) saturate(160%);
   }
 }
 
