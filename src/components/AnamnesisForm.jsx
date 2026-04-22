@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import ProgressBar from './ProgressBar';
 import QuestionCard from './QuestionCard';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const questions = [
   {
@@ -187,17 +189,48 @@ export default function AnamnesisForm({ theme, setTheme }) {
     return { bmi: bmi.toFixed(1), category, message };
   };
 
-  const submitToFormspree = async (finalAnswers) => {
+  const submitForm = async (finalAnswers) => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch(FORMSPREE_URL, {
+      // 1. Guardar en Firebase (Firestore)
+      try {
+        const firestoreData = {
+          nombre: finalAnswers['01_Nombre'] || '',
+          edad: finalAnswers['02_Edad'] || '',
+          altura: finalAnswers['03_Altura'] || '',
+          peso: finalAnswers['04_Peso_Actual'] || '',
+          genero: finalAnswers['05_Genero'] || '',
+          whatsapp: finalAnswers['06_WhatsApp'] || '',
+          ocupacion: finalAnswers['07_Ocupacion'] || '',
+          objetivo: finalAnswers['08_Objetivo'] || '',
+          plazo: finalAnswers['09_Plazo'] || '',
+          tiempo_inactivo: finalAnswers['10_Tiempo_Inactivo'] || '',
+          enfermedades: finalAnswers['11_Enfermedades_Medicacion'] || '',
+          lesiones: finalAnswers['12_Lesiones'] || '',
+          dolores: finalAnswers['13_Dolores'] || '',
+          horas_sueno: finalAnswers['14_Horas_Sueno'] || '',
+          comidas_dia: finalAnswers['15_Comidas_Dia'] || '',
+          agua: finalAnswers['16_Agua'] || '',
+          habitos: finalAnswers['17_Habitos'] || '',
+          dias_entrenamiento: finalAnswers['18_Dias_Entrenamiento'] || '',
+          tiempo_sesion: finalAnswers['19_Tiempo_Sesion'] || '',
+          motivacion: finalAnswers['20_Motivacion'] || '',
+          estado: 'nuevo',
+          createdAt: serverTimestamp()
+        };
+        await addDoc(collection(db, 'anamnesis'), firestoreData);
+      } catch (err) {
+        console.error("Error saving to Firebase:", err);
+      }
+
+      // 2. Enviar email vía Formspree
+      await fetch(FORMSPREE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(finalAnswers)
       });
-      // We advance regardless of success during testing to unblock UI. 
-      // In production we can handle errors specifically.
+      
       setIsFinished(true);
     } catch (error) {
       console.error("Formspree Fetch Error:", error);
@@ -235,7 +268,7 @@ export default function AnamnesisForm({ theme, setTheme }) {
       if (currentStep < questions.length - 1) {
         setCurrentStep(prev => prev + 1);
       } else {
-        submitToFormspree(newAnswers);
+        submitForm(newAnswers);
       }
     }, 400); 
   };
@@ -327,7 +360,7 @@ export default function AnamnesisForm({ theme, setTheme }) {
                 if (currentStep < questions.length - 1) {
                   setCurrentStep(prev => prev + 1);
                 } else {
-                  submitToFormspree(answers); // Technically won't happen here but safe
+                  submitForm(answers); // Technically won't happen here but safe
                 }
               }}
             >
