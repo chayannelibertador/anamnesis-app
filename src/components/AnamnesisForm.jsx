@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import ProgressBar from './ProgressBar';
 import QuestionCard from './QuestionCard';
+import WelcomeScreen from './WelcomeScreen';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -148,6 +149,7 @@ const questions = [
 ];
 
 export default function AnamnesisForm({ theme, setTheme }) {
+  const [hasStarted, setHasStarted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [isFinished, setIsFinished] = useState(false);
@@ -293,6 +295,10 @@ export default function AnamnesisForm({ theme, setTheme }) {
       setCurrentStep(prev => prev - 1);
     }
   };
+
+  if (!hasStarted) {
+    return <WelcomeScreen onStart={() => setHasStarted(true)} />;
+  }
 
   if (isSubmitting) {
     return (
