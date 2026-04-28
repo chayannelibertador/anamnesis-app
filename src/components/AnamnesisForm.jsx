@@ -55,6 +55,7 @@ const questions = [
     question: '¿Qué buscas lograr específicamente?',
     motivation: 'Metas claras traen resultados claros.',
     type: 'options',
+    allowMultiple: true,
     options: ['Pérdida de grasa', 'Ganar masa muscular / Fuerza', 'Salud general', 'Estética']
   },
   {
@@ -76,6 +77,7 @@ const questions = [
     question: '¿Padeces alguna enfermedad crónica o tomas medicación?',
     motivation: 'Es importante para adaptar el plan a tu situación real.',
     type: 'options-with-other',
+    allowMultiple: true,
     options: ['Ninguna', 'Enfermedad cardíaca', 'Problemas respiratorios', 'Diabetes', 'Presión alta o baja', 'Otras']
   },
   {
@@ -83,6 +85,7 @@ const questions = [
     question: '¿Tienes alguna lesión actual o pasada?',
     motivation: 'Es clave para protegerte y diseñar un plan seguro.',
     type: 'options-with-other',
+    allowMultiple: true,
     options: ['Ninguna', 'Rodilla', 'Hombro', 'Columna', 'Tobillo', 'Otras']
   },
   {
@@ -90,7 +93,8 @@ const questions = [
     question: '¿Sientes molestias recurrentes en alguna articulación?',
     motivation: 'Al realizar algún esfuerzo...',
     type: 'options',
-    options: ['Espalda', 'Hombro', 'Rodilla', 'Otras', 'Ninguna molestia']
+    allowMultiple: true,
+    options: ['Ninguna molestia', 'Espalda', 'Hombro', 'Rodilla', 'Otras']
   },
   {
     id: '14_Horas_Sueno',
@@ -118,7 +122,8 @@ const questions = [
     question: '¿Tienes hábitos que puedan afectar el rendimiento?',
     motivation: 'Cigarrillo, alcohol excesivo, mal descanso, etc.',
     type: 'options',
-    options: ['Ninguno', 'Fumo', 'Alcohol frecuente', 'Mucho sedentarismo', 'Varios juntos']
+    allowMultiple: true,
+    options: ['Ninguno', 'Fumo', 'Alcohol frecuente', 'Mucho sedentarismo']
   },
   {
     id: '18_Dias_Entrenamiento',
@@ -192,30 +197,40 @@ export default function AnamnesisForm({ theme, setTheme }) {
   const submitForm = async (finalAnswers) => {
     setIsSubmitting(true);
     
+    // Format arrays into comma-separated strings for Firebase and Formspree compatibility
+    const formattedAnswers = {};
+    for (const key in finalAnswers) {
+      if (Array.isArray(finalAnswers[key])) {
+        formattedAnswers[key] = finalAnswers[key].join(', ');
+      } else {
+        formattedAnswers[key] = finalAnswers[key];
+      }
+    }
+
     try {
       // 1. Guardar en Firebase (Firestore)
       try {
         const firestoreData = {
-          nombre: finalAnswers['01_Nombre'] || '',
-          edad: finalAnswers['02_Edad'] || '',
-          altura: finalAnswers['03_Altura'] || '',
-          peso: finalAnswers['04_Peso_Actual'] || '',
-          genero: finalAnswers['05_Genero'] || '',
-          whatsapp: finalAnswers['06_WhatsApp'] || '',
-          ocupacion: finalAnswers['07_Ocupacion'] || '',
-          objetivo: finalAnswers['08_Objetivo'] || '',
-          plazo: finalAnswers['09_Plazo'] || '',
-          tiempo_inactivo: finalAnswers['10_Tiempo_Inactivo'] || '',
-          enfermedades: finalAnswers['11_Enfermedades_Medicacion'] || '',
-          lesiones: finalAnswers['12_Lesiones'] || '',
-          dolores: finalAnswers['13_Dolores'] || '',
-          horas_sueno: finalAnswers['14_Horas_Sueno'] || '',
-          comidas_dia: finalAnswers['15_Comidas_Dia'] || '',
-          agua: finalAnswers['16_Agua'] || '',
-          habitos: finalAnswers['17_Habitos'] || '',
-          dias_entrenamiento: finalAnswers['18_Dias_Entrenamiento'] || '',
-          tiempo_sesion: finalAnswers['19_Tiempo_Sesion'] || '',
-          motivacion: finalAnswers['20_Motivacion'] || '',
+          nombre: formattedAnswers['01_Nombre'] || '',
+          edad: formattedAnswers['02_Edad'] || '',
+          altura: formattedAnswers['03_Altura'] || '',
+          peso: formattedAnswers['04_Peso_Actual'] || '',
+          genero: formattedAnswers['05_Genero'] || '',
+          whatsapp: formattedAnswers['06_WhatsApp'] || '',
+          ocupacion: formattedAnswers['07_Ocupacion'] || '',
+          objetivo: formattedAnswers['08_Objetivo'] || '',
+          plazo: formattedAnswers['09_Plazo'] || '',
+          tiempo_inactivo: formattedAnswers['10_Tiempo_Inactivo'] || '',
+          enfermedades: formattedAnswers['11_Enfermedades_Medicacion'] || '',
+          lesiones: formattedAnswers['12_Lesiones'] || '',
+          dolores: formattedAnswers['13_Dolores'] || '',
+          horas_sueno: formattedAnswers['14_Horas_Sueno'] || '',
+          comidas_dia: formattedAnswers['15_Comidas_Dia'] || '',
+          agua: formattedAnswers['16_Agua'] || '',
+          habitos: formattedAnswers['17_Habitos'] || '',
+          dias_entrenamiento: formattedAnswers['18_Dias_Entrenamiento'] || '',
+          tiempo_sesion: formattedAnswers['19_Tiempo_Sesion'] || '',
+          motivacion: formattedAnswers['20_Motivacion'] || '',
           estado: 'nuevo',
           createdAt: serverTimestamp()
         };
@@ -228,7 +243,7 @@ export default function AnamnesisForm({ theme, setTheme }) {
       await fetch(FORMSPREE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(finalAnswers)
+        body: JSON.stringify(formattedAnswers)
       });
       
       setIsFinished(true);
@@ -270,7 +285,13 @@ export default function AnamnesisForm({ theme, setTheme }) {
       } else {
         submitForm(newAnswers);
       }
-    }, 400); 
+    }, currentQ.allowMultiple || currentQ.type === 'text' || currentQ.type === 'textarea' ? 0 : 400); 
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
+    }
   };
 
   if (isSubmitting) {
@@ -366,6 +387,15 @@ export default function AnamnesisForm({ theme, setTheme }) {
             >
               Continuar con el plan ✓
             </button>
+            <button 
+              className="option-btn" 
+              style={{ marginTop: '10px', background: 'rgba(255,255,255,0.1)', color: 'var(--text-primary)', border: '1px solid rgba(255,255,255,0.2)', fontWeight: 'bold', width: '100%', fontSize: '1.2rem' }}
+              onClick={() => {
+                setShowBmiResult(false);
+              }}
+            >
+              ← Volver
+            </button>
           </div>
         </div>
       </div>
@@ -385,7 +415,9 @@ export default function AnamnesisForm({ theme, setTheme }) {
             motivation={currentQ.motivation}
             type={currentQ.type}
             options={currentQ.options}
+            allowMultiple={currentQ.allowMultiple}
             onAnswer={handleAnswer}
+            onBack={currentStep > 0 ? handleBack : null}
             selectedAnswer={answers[currentQ.id]}
           />
         </div>
