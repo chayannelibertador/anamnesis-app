@@ -115,8 +115,9 @@ body {
   .form-area {
     width: 100%; /* Take full width minus the wrapper padding */
     max-width: 100%;
-    margin-top: 0; /* Remove top offset to fix "too much air" */
+    margin-top: 10vh; /* Fixed top offset to prevent drastic shift */
     padding: 0;
+    justify-content: flex-start; /* Do not center when keyboard shrinks viewport */
   }
   .glass-panel {
     padding: 20px;
