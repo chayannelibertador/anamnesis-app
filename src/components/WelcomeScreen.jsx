@@ -18,6 +18,14 @@ export default function WelcomeScreen({ onStart }) {
         .welcome-exit {
           animation: fadeOutWelcome 0.5s ease forwards !important;
         }
+        @keyframes emergeFromDark {
+          0% { opacity: 0; filter: brightness(0) blur(5px); }
+          100% { opacity: 1; filter: brightness(1) blur(0px); }
+        }
+        @keyframes btnFadeIn {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
         @keyframes floatBtn {
           0%, 100% { transform: translateY(0px); }
           50%       { transform: translateY(-6px); }
@@ -28,6 +36,7 @@ export default function WelcomeScreen({ onStart }) {
           object-fit: cover;
           border-radius: 12px;
           display: block;
+          animation: emergeFromDark 2.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
         .start-btn {
           margin-top: 32px;
@@ -76,13 +85,15 @@ export default function WelcomeScreen({ onStart }) {
         className="welcome-logo"
       />
 
-      {/* Botón comenzar */}
-      <button
-        className="start-btn"
-        onClick={onStart}
-      >
-        Comenzar →
-      </button>
+      {/* Botón comenzar encapsulado en div para animar su aparición independiente del pulso */}
+      <div style={{ opacity: 0, animation: 'btnFadeIn 1.5s ease-out 1.5s forwards' }}>
+        <button
+          className="start-btn"
+          onClick={onStart}
+        >
+          Comenzar →
+        </button>
+      </div>
     </div>
   );
 }
