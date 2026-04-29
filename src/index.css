@@ -106,24 +106,37 @@ body {
     background-position: center top;
   }
   .app-container::before {
-    /* on mobile, dark fade from top to bottom so image is slightly visible behind form */
     background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.85) 100%);
   }
   .content-wrapper {
-    padding: 15px;
+    padding: 10px;
   }
   .form-area {
-    width: 100%; /* Take full width minus the wrapper padding */
+    width: 100%;
     max-width: 100%;
-    margin-top: 10vh; /* Fixed top offset to prevent drastic shift */
+    margin-top: 0; /* Remove top offset to keep it as high as possible */
     padding: 0;
-    justify-content: flex-start; /* Do not center when keyboard shrinks viewport */
+    justify-content: flex-start;
   }
   .glass-panel {
-    padding: 20px;
-    background: rgba(15, 15, 15, 0.45); /* Extra transparency to see bg */
+    padding: 15px; /* Reduced padding */
+    background: rgba(15, 15, 15, 0.45);
     backdrop-filter: blur(10px) saturate(160%);
     -webkit-backdrop-filter: blur(10px) saturate(160%);
+  }
+  
+  /* Compact sizes on mobile to prevent keyboard push-up */
+  .question-title {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+  }
+  .motivation-text {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+  .option-btn {
+    padding: 12px 16px;
+    font-size: 1rem;
   }
 }
 
@@ -241,4 +254,3 @@ input.option-btn:focus, textarea.option-btn:focus {
   border-color: var(--neon-color);
   box-shadow: 0 0 10px var(--neon-color);
 }
-
